@@ -1,3 +1,5 @@
+import io
+from io import FileIO
 import socket 
 import threading
 
@@ -9,8 +11,13 @@ cliente_socket.connect(endereco)
 
 while True:
     mensagem = input("Informe texto ou digite 'sair' para desconectar: ")
-    cliente_socket.send(mensagem.encode())
 
     if mensagem == "sair":
+        cliente_socket.send(mensagem.encode())
         cliente_socket.close()
         break
+    
+    else:
+        arquivo = open("../dados/"+mensagem, encoding="UTF-8")
+        cliente_socket.send(arquivo.read().encode())
+        arquivo.close()

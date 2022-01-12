@@ -1,3 +1,5 @@
+import io
+from io import FileIO
 import socket 
 import threading 
   
@@ -11,11 +13,12 @@ envio_servidor, endereco = servidor_socket.accept()
 print("Nova conexao recebida de ", endereco)
 
 while True:
+    print("\nEscutando...")
     resposta = envio_servidor.recv(1024)
     resposta = resposta.rstrip().decode()
 
     if resposta != "sair":
-        print("Mensagem do cliente:", resposta)
+        print("Mensagem do cliente:\n\n\n", resposta)
     else:
         servidor_socket.close()
         break
