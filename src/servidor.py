@@ -25,6 +25,10 @@ def escolha_arquivo(conexao):
     try:
         resposta_opcao = int(conexao.recv(1024).rstrip().decode())
         print("\nArquivo escolhido:",arquivos[resposta_opcao-1])
+
+        arquivo_escolhido = open("./dados/" + str(arquivos[resposta_opcao-1]))
+        # ENVIAR NOME, CONTEUDO E EXTENSAO
+        
     except Exception as e:
         print("Erro na obtenção da opção:", e)
 
