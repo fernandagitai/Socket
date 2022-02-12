@@ -19,7 +19,7 @@ def enviar_arquivos(conexao):
     # LISTANDO ARQUIVOS DISPONIVEIS PARA ENVIO 
     arquivos = os.listdir(os.path.join(os.getcwd(), "../dados cliente"))
 
-    opcoes = "Opções de envio:\n"
+    opcoes = "\nOpções de envio:\n"
     i = 1
     
     for item in arquivos:

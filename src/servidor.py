@@ -14,8 +14,6 @@ def receber_arquivos(conexao):
         nome_arquivo = confirmacao.split(":")[-1]
         tamanho_arquivo = int(confirmacao.split(":")[0])
         
-        print(nome_arquivo)
-
     except Exception as e:
         print("\nErro na confirmacao:", e)
         return  
@@ -96,7 +94,7 @@ def enviar_arquivos(conexao):
         print("Erro no envio de dados:", e)    
 
 
-def controle_cliente(conexao):
+def controle_cliente(conexao, endereco_cliente):
 
     while True:
         opcao = conexao.recv(1024).decode()
