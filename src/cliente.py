@@ -4,46 +4,13 @@ import sys
 import os
 
 
-def escolha_arquivo_cliente(cliente_socket):
-
-    # EXIBINDO AS OPÇÕES DE DOWNLOAD
-    print()
-    try:
-        opcoes = str(cliente_socket.recv(4096).rstrip().decode())
-        no_opcoes = len(opcoes.split("\n")) - 1
-        print(opcoes)
-    except Exception as e:
-        print("\nErro em obter opções:", e)
-        return
-
-    # ENVIANDO A OPÇÃO ESCOLHIDA
-    while True:
-        escolha = int(input("\nDigite o ID do arquivo a ser baixado: "))
-        if escolha <= no_opcoes and escolha > 0:
-            try:
-                cliente_socket.send(str(escolha).encode())
-                return 
-
-            except Exception as e:
-                print("\nErro em obter opções:", e)
-                continuar = input("\nDeseja digitar novamente? s/n: ")
-                if continuar == "n":
-                    return
-
-        else:
-            print("\nNúmero inválido.")
-            continuar = input("Deseja digitar novamente? s/n: ")
-            if continuar == "n":
-                return
-
-
 def listar_arquivos(conexao):
 
     print()
     try:
         lista_arquivos = str(conexao.recv(4096).rstrip().decode())
         print(lista_arquivos)
-        input("Pressione enter...")
+        input("\nPressione enter...")
 
     except Exception as e:
         print("\nErro em obter opções:", e)

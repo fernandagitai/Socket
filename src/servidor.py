@@ -4,38 +4,6 @@ import getopt
 import sys
 import os
 import threading
-  
-# try:
-#     pass
-# except Exception as e:
-#     pass
-    
-def escolha_arquivo(conexao):
-
-    # ENVIANDO OPÇÕES DE DOWNLOAD
-    arquivos = os.listdir(os.path.join(os.getcwd(), "../dados"))
-    opcoes = "Opções de download:\n"
-    i = 1
-    for item in arquivos:
-        opcoes += str(i) + ". " + item + "\n"
-        i += 1 
-
-    try:
-        conexao.sendall(str.encode(opcoes))
-    except Exception as e:
-        print("Erro no envio:", e)
-
-
-    # OBTENDO RESPOSTA
-    try:
-        resposta_opcao = int(conexao.recv(1024).rstrip().decode())
-        print("\nArquivo escolhido:",arquivos[resposta_opcao-1])
-
-        arquivo_escolhido = open("./dados/" + str(arquivos[resposta_opcao-1]))
-        # ENVIAR NOME, CONTEUDO E EXTENSAO
-        
-    except Exception as e:
-        print("Erro na obtenção da opção:", e)
 
 
 def receber_arquivos():
@@ -85,7 +53,7 @@ def enviar_arquivos(conexao):
 
     # ENVIANDO ARQUIVO
     try:
-        arquivo_escolhido = open("./dados/" + str(arquivos[resposta_opcao-1]))
+        arquivo_escolhido = open("../dados/" + str(arquivos[resposta_opcao-1]), "rb")
         
         while True:
             arquivo_em_bytes = arquivo_escolhido.read(1024)
