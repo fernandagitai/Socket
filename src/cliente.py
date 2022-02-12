@@ -1,6 +1,4 @@
 import socket
-import getopt
-import sys
 import os
 
 
@@ -17,7 +15,54 @@ def listar_arquivos(conexao):
 
 
 def enviar_arquivos(conexao):
-    pass
+    
+    # LISTANDO ARQUIVOS DISPONIVEIS PARA ENVIO 
+    arquivos = os.listdir(os.path.join(os.getcwd(), "../dados cliente"))
+
+    opcoes = "Opções de envio:\n"
+    i = 1
+    
+    for item in arquivos:
+        opcoes += str(i) + ". " + item + "\n"
+        i += 1 
+    print(opcoes)
+
+    # ESCOLHENDO ARQUIVO A SER ENVIADO
+    id_escolhido = int(input("Digite o ID do arquivo a ser enviado: "))
+
+    
+    # CONFIRMANDO ARQUIVO COM O SERVIDOR
+    try:
+        nome_arquivo = arquivos[id_escolhido-1]
+        tamanho_arquivo = os.path.getsize("../dados cliente/" + arquivos[id_escolhido-1])
+
+        confirmacao = str(tamanho_arquivo) + ":" + str(nome_arquivo)
+        conexao.sendall(confirmacao.encode())
+
+        print("\nEnviando o arquivo:", nome_arquivo)
+
+    except Exception as e:
+        print("Erro na escolha do arquivo:", e)
+        return 
+
+
+    # ENVIANDO ARQUIVO
+    try:
+        arquivo_escolhido = open("../dados cliente/" + nome_arquivo, "rb")
+        
+        while True:
+            arquivo_em_bytes = arquivo_escolhido.read(1024)
+            if len(arquivo_em_bytes) <= 0:
+                # FINALIZOU O ARQUIVO
+                break
+            conexao.sendall(arquivo_em_bytes)
+
+    except Exception as e:
+        print("\nErro no envio de dados:", e) 
+
+    print("\nArquivo enviado!")   
+    input("Pressione enter para continuar...")
+
 
 
 def baixar_arquivos(conexao):

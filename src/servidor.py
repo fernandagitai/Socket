@@ -6,8 +6,47 @@ import os
 import threading
 
 
-def receber_arquivos():
-    pass
+def receber_arquivos(conexao):
+
+    # CONFIRMACAO ARQUIVO
+    try:
+        confirmacao = conexao.recv(4096).rstrip().decode()
+        nome_arquivo = confirmacao.split(":")[-1]
+        tamanho_arquivo = int(confirmacao.split(":")[0])
+        
+        print(nome_arquivo)
+
+    except Exception as e:
+        print("\nErro na confirmacao:", e)
+        return  
+
+    # CASO JA EXISTA UM ARQUIVO DE MESMO NOME NA PASTA
+    nome_aux = nome_arquivo
+    i = 1
+    while os.path.exists("./dados/" + nome_aux):
+        nome_aux = '(' + str(i) + ')' + nome_arquivo
+        i += 1
+
+    nome_arquivo = nome_aux
+    tamanho_aux = tamanho_arquivo
+
+    # BAIXANDO ARQUIVO
+    with open("../dados/" + nome_arquivo, 'wb') as file:
+        while True:
+            if tamanho_aux <= 0:
+                break
+
+            try:
+                byte = conexao.recv(1024)
+                file.write(byte)
+                tamanho_aux -= len(byte)
+
+            except Exception as e:
+                print("\nErro no download:", e)
+                return
+
+    print("\nArquivo adicionado com sucesso!")
+
 
 
 def listar_arquivos(conexao):
@@ -28,16 +67,7 @@ def listar_arquivos(conexao):
 
 def enviar_arquivos(conexao):
 
-    # comando = "Digite o ID do arquivo escolhido (disponiveis na listagem):"
     arquivos = os.listdir(os.path.join(os.getcwd(), "../dados"))
-
-    # ENVIANDO COMANDO
-    # try:
-    #     conexao.sendall(comando.encode())
-    # except Exception as e:
-    #     print("Erro no envio de dados:", e)
-    #     return
-
 
     # RECEBENDO OPCAO
     try:
@@ -66,13 +96,13 @@ def enviar_arquivos(conexao):
         print("Erro no envio de dados:", e)    
 
 
-def controle_cliente(conexao, endereco_cliente):
+def controle_cliente(conexao):
 
     while True:
         opcao = conexao.recv(1024).decode()
 
         if opcao == "A":
-            receber_arquivos()
+            receber_arquivos(conexao)
 
         elif opcao == "L":
             listar_arquivos(conexao)
