@@ -1,5 +1,4 @@
 import socket
-from _thread import *
 import getopt
 import sys
 import os
@@ -13,10 +12,10 @@ def receber_arquivos(conexao):
         confirmacao = conexao.recv(4096).rstrip().decode()
         nome_arquivo = confirmacao.split(":")[-1]
         tamanho_arquivo = int(confirmacao.split(":")[0])
-        
+
     except Exception as e:
         print("\nErro na confirmacao:", e)
-        return  
+        return
 
     # CASO JA EXISTA UM ARQUIVO DE MESMO NOME NA PASTA
     nome_aux = nome_arquivo
@@ -46,16 +45,15 @@ def receber_arquivos(conexao):
     print("\nArquivo adicionado com sucesso!")
 
 
-
 def listar_arquivos(conexao):
 
     arquivos = os.listdir(os.path.join(os.getcwd(), "../dados"))
     opcoes = "Opções de download:\n"
     i = 1
-    
+
     for item in arquivos:
         opcoes += str(i) + ". " + item + "\n"
-        i += 1 
+        i += 1
 
     try:
         conexao.sendall(str.encode(opcoes))
@@ -64,25 +62,26 @@ def listar_arquivos(conexao):
 
 
 def enviar_arquivos(conexao):
-
     arquivos = os.listdir(os.path.join(os.getcwd(), "../dados"))
 
     # RECEBENDO OPCAO
     try:
         resposta_opcao = int(conexao.recv(1024).rstrip().decode())
-        tamanho_arquivo = os.path.getsize("../dados/" + arquivos[resposta_opcao-1])
-        confirmacao = str(tamanho_arquivo) + ":" + str(arquivos[resposta_opcao-1])
+        tamanho_arquivo = os.path.getsize(
+            "../dados/" + arquivos[resposta_opcao-1])
+        confirmacao = str(tamanho_arquivo) + ":" + \
+            str(arquivos[resposta_opcao-1])
         conexao.sendall(confirmacao.encode())
-        
+
     except Exception as e:
         print("Erro no recebimento de dados:", e)
         return
 
-
     # ENVIANDO ARQUIVO
     try:
-        arquivo_escolhido = open("../dados/" + str(arquivos[resposta_opcao-1]), "rb")
-        
+        arquivo_escolhido = open(
+            "../dados/" + str(arquivos[resposta_opcao-1]), "rb")
+
         while True:
             arquivo_em_bytes = arquivo_escolhido.read(1024)
             if len(arquivo_em_bytes) <= 0:
@@ -91,7 +90,7 @@ def enviar_arquivos(conexao):
             conexao.sendall(arquivo_em_bytes)
 
     except Exception as e:
-        print("Erro no envio de dados:", e)    
+        print("Erro no envio de dados:", e)
 
 
 def controle_cliente(conexao, endereco_cliente):
@@ -123,7 +122,6 @@ def servidor():
 
     print("\nEscutando em", endereco_servidor)
 
-
     while True:
 
         # NOVA CONEXAO
@@ -131,7 +129,8 @@ def servidor():
         print("\nNova conexao recebida de ", endereco_cliente)
 
         # ADICIONANDO THREAD
-        thread = threading.Thread(target = controle_cliente, args = (conexao, endereco_cliente))
+        thread = threading.Thread(
+            target=controle_cliente, args=(conexao, endereco_cliente))
         thread.start()
 
         print("Conexoes ativas:", threading.active_count()-1)
