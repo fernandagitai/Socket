@@ -1,6 +1,4 @@
 import socket
-import getopt
-import sys
 import os
 import threading
 

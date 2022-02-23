@@ -12,6 +12,7 @@ def listar_arquivos(conexao):
 
     except Exception as e:
         print("\nErro em obter opções:", e)
+        return
 
 
 def enviar_arquivos(conexao):
@@ -43,7 +44,7 @@ def enviar_arquivos(conexao):
 
     except Exception as e:
         print("Erro na escolha do arquivo:", e)
-        return 
+        return
 
 
     # ENVIANDO ARQUIVO
@@ -58,7 +59,8 @@ def enviar_arquivos(conexao):
             conexao.sendall(arquivo_em_bytes)
 
     except Exception as e:
-        print("\nErro no envio de dados:", e) 
+        print("\nErro no envio de dados:", e)
+        return 
 
     print("\nArquivo enviado!")   
     input("Pressione enter para continuar...")
@@ -89,7 +91,7 @@ def baixar_arquivos(conexao):
 
     except Exception as e:
         print("\nErro na confirmacao:", e)
-        return  
+        return
 
     # CASO JA EXISTA UM ARQUIVO DE MESMO NOME NA PASTA
     nome_aux = nome_arquivo
@@ -102,19 +104,24 @@ def baixar_arquivos(conexao):
     tamanho_aux = tamanho_arquivo
 
     # BAIXANDO ARQUIVO
-    with open("../dados cliente/" + nome_arquivo, 'wb') as file:
-        while True:
-            if tamanho_aux <= 0:
-                break
+    try:
+        file = open("../dados cliente/" + nome_arquivo, 'wb')
+    except Exception as e:
+        print("Erro na obtenção do arquivo:", e)
+        return
 
-            try:
-                byte = conexao.recv(1024)
-                file.write(byte)
-                tamanho_aux -= len(byte)
+    while True:
+        if tamanho_aux <= 0:
+            break
 
-            except Exception as e:
-                print("Erro no download:", e)
-                return
+        try:
+            byte = conexao.recv(1024)
+            file.write(byte)
+            tamanho_aux -= len(byte)
+
+        except Exception as e:
+            print("Erro no download:", e)
+            return
 
     print("Arquivo baixado!")
 
@@ -138,24 +145,39 @@ def cliente():
                 socket_servidor.send("L".encode())
             except Exception as e:
                 print("Erro no envio:", e)
+                socket_servidor.close()
+                break
 
-            listar_arquivos(socket_servidor)
+            erro = listar_arquivos(socket_servidor)
+            if erro:
+                socket_servidor.close()
+                break
 
         elif opcao == '2':
             try:
                 socket_servidor.send("A".encode())
             except Exception as e:
                 print("Erro no envio:", e)
+                socket_servidor.close()
+                break
 
-            enviar_arquivos(socket_servidor)
+            erro = enviar_arquivos(socket_servidor)
+            if erro:
+                socket_servidor.close()
+                break
 
         elif opcao == '3':
             try:
                 socket_servidor.send("D".encode())
             except Exception as e:
                 print("Erro no envio:", e)
+                socket_servidor.close()
+                break
 
-            baixar_arquivos(socket_servidor)
+            erro = baixar_arquivos(socket_servidor)
+            if erro:
+                socket_servidor.close()
+                break
 
         elif opcao == '4':
             try:
@@ -168,14 +190,6 @@ def cliente():
         else:
             print('Opção invalida!')
 
-        
-        
-        
-        # mensagem = input("\nInforme texto ou digite 'sair' para desconectar: ")
-        # else:
-        #     arquivo = open("../dados/"+mensagem, encoding="UTF-8")
-        #     cliente_socket.send(arquivo.read().encode())
-        #     arquivo.close()
 
 if __name__ == "__main__":
     cliente()
