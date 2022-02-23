@@ -15,15 +15,15 @@ def receber_arquivos(conexao):
         print("\nErro na confirmacao:", e)
         return
 
+    tamanho_aux = tamanho_arquivo
     # CASO JA EXISTA UM ARQUIVO DE MESMO NOME NA PASTA
     nome_aux = nome_arquivo
     i = 1
-    while os.path.exists("./dados/" + nome_aux):
-        nome_aux = '(' + str(i) + ')' + nome_arquivo
+    while os.path.exists("../dados/" + nome_aux):
+        nome_aux = '(' + str(i) + ') ' + nome_arquivo
         i += 1
 
     nome_arquivo = nome_aux
-    tamanho_aux = tamanho_arquivo
 
     # BAIXANDO ARQUIVO
     with open("../dados/" + nome_arquivo, 'wb') as file:
